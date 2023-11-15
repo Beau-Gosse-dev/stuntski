@@ -1,0 +1,9 @@
+{
+    "minScale": 0.15,
+    "maxScale": 0.35,
+    "maxSpeedForMaxScale": 15.0,
+    "extentsFactor": 20.0,
+    "circleSeg": 16,
+    "viewportOffsetX": 35.0,
+    "viewportOffsetY": 5.0
+}

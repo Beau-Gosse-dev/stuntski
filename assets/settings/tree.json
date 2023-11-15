@@ -1,0 +1,9 @@
+{
+    "groupIndex": -10,
+    "density": 60.0,
+    "restitution": 0.3,
+    "torquePerMass": 15.0,
+    "multiplierP": 60.0,
+    "multiplierI": 2.0,
+    "multiplierD": 0.0
+}

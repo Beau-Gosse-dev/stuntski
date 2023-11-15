@@ -1,0 +1,61 @@
+
+biped1.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+body
+  rotate: false
+  xy: 2, 2
+  size: 35, 75
+  orig: 35, 75
+  offset: 0, 0
+  index: -1
+upperleg
+  rotate: false
+  xy: 39, 2
+  size: 27, 69
+  orig: 27, 69
+  offset: 0, 0
+  index: -1
+lowerleg
+  rotate: false
+  xy: 68, 2
+  size: 175, 65
+  orig: 175, 65
+  offset: 0, 0
+  index: -1
+legandski
+  rotate: false
+  xy: 245, 2
+  size: 175, 65
+  orig: 175, 65
+  offset: 0, 0
+  index: -1
+upperarm
+  rotate: false
+  xy: 2, 79
+  size: 18, 42
+  orig: 18, 42
+  offset: 0, 0
+  index: -1
+lowerarm
+  rotate: false
+  xy: 39, 73
+  size: 22, 41
+  orig: 22, 41
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 68, 69
+  size: 41, 35
+  orig: 41, 35
+  offset: 0, 0
+  index: -1
+ski
+  rotate: false
+  xy: 245, 69
+  size: 175, 18
+  orig: 175, 18
+  offset: 0, 0
+  index: -1

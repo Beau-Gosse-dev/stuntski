@@ -1,0 +1,17 @@
+{
+    "groupIndex": -1,
+    "density": 120.0,
+    "restitution": 0.6,
+    "friction": 5.0,
+    "maxMotorLimit": 750.0,
+    "kneeMultiplierP": 20.0,
+    "kneeMultiplierI": 3.0,
+    "kneeMultiplierD": 0.1,
+    "hipMultiplierP": 8.0,
+    "hipMultiplierI": 1.5,
+    "hipMultiplierD": 0.1,
+    "shoulderMultiplier": 10.0,
+    "elbowMultiplier": 10.0,
+    "startX": 0.5,
+    "startY": 0.5
+}

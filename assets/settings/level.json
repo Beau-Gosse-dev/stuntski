@@ -1,0 +1,9 @@
+{
+    "gravity": -10.0,
+    "doSleep": true,
+    "velocityIterations": 10,
+    "positionIterations": 10,
+    "bailForce": 60.0,
+    "surfaceFriction": 0.03,
+    "defaultControlAreaType": 2
+}

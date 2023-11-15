@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    version = '1.2'
+    ext {
+        appName = 'stuntmountain'
+        gdxVersion = '1.9.10'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+    }
+}
+
+project(":desktop") {
+    apply plugin: "java"
+
+    dependencies {
+        implementation project(":core")
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+    }
+}
+
+project(":core") {
+    apply plugin: "java"
+
+    dependencies {
+        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    }
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}

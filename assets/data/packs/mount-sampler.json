@@ -1,0 +1,16 @@
+{
+    "name": "Mount Miscellany",
+    "description": "A variety of runs.",
+    "difficulty": 2,
+    "levelFilenames": [
+        "assets/data/levels/mount-sampler/beginners-luck.json",
+        "assets/data/levels/mount-sampler/triple-trouble.json",
+        "assets/data/levels/mount-sampler/shopping-at-the-gaps.json",
+        "assets/data/levels/mount-sampler/high-jumper.json",
+        "assets/data/levels/mount-sampler/rolling-trees.json",
+        "assets/data/levels/mount-sampler/jacks-park.json",
+        "assets/data/levels/mount-sampler/scottys-blitz.json",
+        "assets/data/levels/mount-sampler/tanners-revenge.json",
+        "assets/data/levels/mount-sampler/the-steppes.json"
+    ]
+}

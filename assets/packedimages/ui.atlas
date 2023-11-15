@@ -1,0 +1,99 @@
+
+ui.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+background
+  rotate: false
+  xy: 2, 134
+  size: 200, 120
+  split: 15, 17, 15, 15
+  pad: 22, 0, 0, 0
+  orig: 200, 120
+  offset: 0, 0
+  index: -1
+black_diamond
+  rotate: false
+  xy: 2, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+blue_square
+  rotate: false
+  xy: 204, 126
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+control_back
+  rotate: false
+  xy: 132, 68
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+control_exit
+  rotate: false
+  xy: 132, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+control_pause
+  rotate: false
+  xy: 724, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+control_play
+  rotate: false
+  xy: 790, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+control_repeat
+  rotate: false
+  xy: 856, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+controlknob
+  rotate: false
+  xy: 334, 126
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+double_black_diamond
+  rotate: false
+  xy: 464, 126
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+green_circle
+  rotate: false
+  xy: 594, 126
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sound
+  rotate: false
+  xy: 922, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sound_mute
+  rotate: false
+  xy: 724, 124
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
