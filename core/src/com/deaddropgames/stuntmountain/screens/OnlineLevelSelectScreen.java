@@ -184,7 +184,20 @@ public class OnlineLevelSelectScreen extends AbstractScreen implements Runnable 
         Table row = new Table(getSkin());
 
         Table textTable = new Table(getSkin());
-        textTable.add(createButtonLabel(levelSummaryResult.name)).left().pad(5 * game.scaleFactor);
+        
+        // Create a horizontal group for level name and completion status
+        Table nameTable = new Table(getSkin());
+        nameTable.add(createButtonLabel(levelSummaryResult.name)).left().pad(5 * game.scaleFactor);
+        
+        // Check if level is completed and add indicator
+        String levelStatsId = "online:" + levelSummaryResult.id;
+        if (game.levelProgress.isLevelCompleted(levelStatsId)) {
+            Label completedLabel = new Label(" [DONE]", getSkin());
+            completedLabel.setColor(0, 0.8f, 0, 1); // Green color
+            nameTable.add(completedLabel).padLeft(10 * game.scaleFactor);
+        }
+        
+        textTable.add(nameTable).left();
         textTable.row();
         Label desc = new Label(levelSummaryResult.description, getSkin());
         desc.setWrap(true);

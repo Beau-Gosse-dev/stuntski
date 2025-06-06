@@ -91,6 +91,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
     private float btnHeight = -1;
 
     private Label pointsLabel;
+    private Label levelNameLabel;
 
     private GameMessageQueue msgQueue;
 
@@ -256,18 +257,17 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
         if(msgQueue != null) {
 
-            if(level != null) {
-
-                msgQueue.setStaticMessage(level.name + "\n" + tapToStartMsg);
-            } else {
-
-                msgQueue.setStaticMessage(tapToStartMsg);
-            }
+            msgQueue.setStaticMessage(tapToStartMsg);
         }
 
         if(speedLabel != null) {
 
             speedLabel.setText("0" + speedDesignator);
+        }
+
+        if(levelNameLabel != null && level != null) {
+
+            levelNameLabel.setText(level.name);
         }
 
         if(controlArea != null) {
@@ -533,15 +533,16 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         table.setWidth(stage.getWidth());
         table.setHeight(stage.getHeight());
 
+        levelNameLabel = createButtonLabel(level != null ? level.name : "");
+        levelNameLabel.setColor(.25f, .25f, .25f, 1f);
+        levelNameLabel.setAlignment(Align.center);
+        table.add(levelNameLabel).colspan(3).expandX().fillX().top().padTop(10 * game.scaleFactor);
+        
+        table.row();
+        
         table.add(new Label("", skin)).minWidth(100 * game.scaleFactor).padLeft(10 * game.scaleFactor).top();
 
-        String startMsg = tapToStartMsg;
-        if(level != null) {
-
-            startMsg = level.name + "\n" + tapToStartMsg;
-        }
-
-        msgQueue = new GameMessageQueue(startMsg, skin);
+        msgQueue = new GameMessageQueue(tapToStartMsg, skin);
         table.add(msgQueue.getMsgLabel()).expandX().fillX();
         
         pointsLabel = createButtonLabel(points + "");
@@ -1148,13 +1149,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
             }
         } else {
 
-            if(level != null) {
-
-                msgQueue.setStaticMessage(level.name + "\n" + tapToStartMsg);
-            } else {
-
-                msgQueue.setStaticMessage(tapToStartMsg);
-            }
+            msgQueue.setStaticMessage(tapToStartMsg);
             buttonsTable.add(playBtn).pad(5 * game.scaleFactor).width(btnWidth).height(btnHeight);
 
             if (!levelFinished) {
@@ -1213,6 +1208,9 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
             // finalize our stats for this run
             stats.setPoints(points);
+            
+            // Mark level as completed in progress tracker
+            game.levelProgress.markLevelCompleted(level.getStatsId());
 
             // show the stats for this run
             showEndMenu();

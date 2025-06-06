@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Json;
 import com.deaddropgames.stuntmountain.level.Level;
 import com.deaddropgames.stuntmountain.screens.*;
 import com.deaddropgames.stuntmountain.settings.*;
+import com.deaddropgames.stuntmountain.util.LevelProgress;
 
 public class StuntMountain extends Game {
 
@@ -29,6 +30,7 @@ public class StuntMountain extends Game {
     // preferences/options
     public Preferences preferences;
     public Preferences levelStats;
+    public LevelProgress levelProgress;
 
     // asset manager
     public AssetManager assetManager;
@@ -156,6 +158,9 @@ public class StuntMountain extends Game {
 
         // get/create the level stats
         levelStats = Gdx.app.getPreferences("level-stats");
+        
+        // Initialize level progress tracking
+        levelProgress = new LevelProgress();
 
         spriteBatch = new SpriteBatch();
 

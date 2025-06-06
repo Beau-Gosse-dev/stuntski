@@ -204,7 +204,19 @@ public class LevelSelectScreen extends AbstractScreen {
         Table row = new Table(getSkin());
 
         Table textTable = new Table(getSkin());
-        textTable.add(createButtonLabel(level.name)).left().pad(5 * game.scaleFactor);
+        
+        // Create a horizontal group for level name and completion status
+        Table nameTable = new Table(getSkin());
+        nameTable.add(createButtonLabel(level.name)).left().pad(5 * game.scaleFactor);
+        
+        // Check if level is completed and add indicator
+        if (game.levelProgress.isLevelCompleted(level.getStatsId())) {
+            Label completedLabel = new Label(" [DONE]", getSkin());
+            completedLabel.setColor(0, 0.8f, 0, 1); // Green color
+            nameTable.add(completedLabel).padLeft(10 * game.scaleFactor);
+        }
+        
+        textTable.add(nameTable).left();
         textTable.row();
         Label desc = new Label(level.description, getSkin());
         desc.setWrap(true);
