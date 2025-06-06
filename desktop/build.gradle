@@ -1,21 +1,24 @@
-apply plugin: "java"
+apply plugin: "java-library"
 
-sourceCompatibility = 1.6
+sourceCompatibility = 17
+targetCompatibility = 17
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.deaddropgames.stuntmountain.desktop.DesktopLauncher"
 
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
+tasks.register('run', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
+    workingDir = project.file("../")
     ignoreExitValue = true
 }
 
-task dist(type: Jar) {
+tasks.register('dist', Jar) {
     from files(sourceSets.main.output.getClassesDirs())
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
+    from { configurations.runtimeClasspath.collect { zipTree(it) } }
 
     manifest {
         attributes 'Main-Class': project.mainClassName
@@ -30,13 +33,13 @@ eclipse {
     }
 }
 
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
+tasks.register('afterEclipseImport') {
+    doLast {
+        def classpath = new XmlParser().parse(file(".classpath"))
+        new Node(classpath, "classpathentry", [kind: 'src', path: 'assets']);
+        def writer = new FileWriter(file(".classpath"))
+        def printer = new XmlNodePrinter(new PrintWriter(writer))
+        printer.setPreserveWhitespace(true)
+        printer.print(classpath)
+    }
 }

@@ -13,7 +13,7 @@ allprojects {
     version = '1.2'
     ext {
         appName = 'stuntmountain'
-        gdxVersion = '1.9.10'
+        gdxVersion = '1.12.1'
     }
 
     repositories {
@@ -24,11 +24,11 @@ allprojects {
 }
 
 project(":desktop") {
-    apply plugin: "java"
+    apply plugin: "java-library"
 
     dependencies {
         implementation project(":core")
-        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
@@ -36,7 +36,7 @@ project(":desktop") {
 }
 
 project(":core") {
-    apply plugin: "java"
+    apply plugin: "java-library"
 
     dependencies {
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
