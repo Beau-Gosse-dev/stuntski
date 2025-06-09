@@ -31,4 +31,8 @@ replay_pid*
 gradle
 
 # Build directories
-build.claude/settings.local.json
+build/
+*/build/
+
+# Claude local settings
+.claude/settings.local.json
