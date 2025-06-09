@@ -154,11 +154,16 @@ public class LevelSelectScreen extends AbstractScreen {
         ScrollPane scrollPane = new ScrollPane(levelsTable, skin);
         scrollPane.setWidth(stage.getWidth());
         scrollPane.setHeight(stage.getHeight());
+        scrollPane.setScrollingDisabled(true, false); // Disable horizontal scrolling, enable vertical
+        scrollPane.setFadeScrollBars(false); // Keep scrollbars visible
 
         table.add(scrollPane).width(stage.getWidth());
         table.row();
 
         stage.addActor(table);
+        
+        // Set focus on the scroll pane for immediate mouse wheel scrolling
+        stage.setScrollFocus(scrollPane);
 
         createBackButton();
         backButton.addListener(new ClickListener() {

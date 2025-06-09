@@ -67,26 +67,23 @@ public class BipedJump {
 
         airTime = (landTime - launchTime) / 1e3f;
         if(airTime > 1.0f) {
-
             airTimePoints = Math.round((airTime - 1.0f) * 25.0f);
-            jumpMsg += String.format(Locale.getDefault(), "%.1fs Air Time +%d\n", airTime, airTimePoints);
         }
+        jumpMsg += String.format(Locale.getDefault(), "%d seconds +%d\n", Math.round(airTime), airTimePoints);
 
         if(launchPos != null && landPos != null) {
 
             float distance = landPos.dst(launchPos);
             distanceMetres = distance;
             if(distance > 15.0f) {
-
                 distancePoints = Math.round((distance - 15.0f) * 10.0f);
-                if(!isMetric) {
-
-                    distance *= metresToFeet;
-                    jumpMsg += String.format(Locale.getDefault(), "%.1f ft distance +%d", distance, distancePoints);
-                } else {
-
-                    jumpMsg += String.format(Locale.getDefault(), "%.1fm distance +%d", distance, distancePoints);
-                }
+            }
+            
+            if(!isMetric) {
+                distance *= metresToFeet;
+                jumpMsg += String.format(Locale.getDefault(), "%d feet +%d", Math.round(distance), distancePoints);
+            } else {
+                jumpMsg += String.format(Locale.getDefault(), "%d meters +%d", Math.round(distance), distancePoints);
             }
         }
 

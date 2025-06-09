@@ -341,9 +341,14 @@ public class OnlineLevelSelectScreen extends AbstractScreen implements Runnable 
         ScrollPane scrollPane = new ScrollPane(levelsTable, skin);
         scrollPane.setWidth(stage.getWidth());
         scrollPane.setHeight(stage.getHeight());
+        scrollPane.setScrollingDisabled(true, false); // Disable horizontal scrolling, enable vertical
+        scrollPane.setFadeScrollBars(false); // Keep scrollbars visible
 
         table.add(scrollPane).width(stage.getWidth());
         table.row();
+        
+        // Set focus on the scroll pane for immediate mouse wheel scrolling
+        stage.setScrollFocus(scrollPane);
 
         // and next/prev buttons
         if (levelSummary != null && (levelSummary.previous != null || levelSummary.next != null)) {

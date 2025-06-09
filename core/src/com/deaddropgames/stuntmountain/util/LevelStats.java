@@ -99,14 +99,14 @@ public class LevelStats {
         table.row();
 
         table.add(createButtonLabel("Total Air Time:", skin)).right().padRight(padding);
-        table.add(createButtonLabel(String.format(Locale.getDefault(), "%.1f seconds", airTimeSeconds), skin)).left().padRight(padding);
+        table.add(createButtonLabel(String.format(Locale.getDefault(), "%d seconds", Math.round(airTimeSeconds)), skin)).left().padRight(padding);
         table.row();
 
         float distance = isMetric ? airDistanceMetres : airDistanceMetres * metresToFeet;
         String units = isMetric ? "metres" : "feet";
 
         table.add(createButtonLabel("Total Air Distance:", skin)).right().padRight(padding);
-        table.add(createButtonLabel(String.format(Locale.getDefault(), "%.1f %s", distance, units), skin)).left().padRight(padding);
+        table.add(createButtonLabel(String.format(Locale.getDefault(), "%d %s", Math.round(distance), units), skin)).left().padRight(padding);
         table.row();
 
         return table;
