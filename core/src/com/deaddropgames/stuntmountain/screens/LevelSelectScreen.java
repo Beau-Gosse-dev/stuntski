@@ -214,11 +214,31 @@ public class LevelSelectScreen extends AbstractScreen {
         Table nameTable = new Table(getSkin());
         nameTable.add(createButtonLabel(level.name)).left().pad(5 * game.scaleFactor);
         
-        // Check if level is completed and add indicator
-        if (game.levelProgress.isLevelCompleted(level.getStatsId())) {
-            Label completedLabel = new Label(" [DONE]", getSkin());
-            completedLabel.setColor(0, 0.8f, 0, 1); // Green color
-            nameTable.add(completedLabel).padLeft(10 * game.scaleFactor);
+        // Check if level has stats and display them
+        String levelId = level.getStatsId();
+        if (game.levelStats.contains(levelId)) {
+            com.badlogic.gdx.utils.Json json = new com.badlogic.gdx.utils.Json();
+            com.deaddropgames.stuntmountain.util.LevelStats stats = json.fromJson(
+                com.deaddropgames.stuntmountain.util.LevelStats.class, 
+                game.levelStats.getString(levelId)
+            );
+            
+            if (stats != null) {
+                // Show best score
+                Label scoreLabel = new Label(" Best Score: " + stats.getPoints(), getSkin());
+                scoreLabel.setColor(0.7f, 0.7f, 0.7f, 1); // Light gray
+                nameTable.add(scoreLabel).padLeft(10 * game.scaleFactor);
+                
+                // Show best time if available
+                if (stats.getCompletionTimeSeconds() > 0) {
+                    int minutes = (int) (stats.getCompletionTimeSeconds() / 60);
+                    int seconds = (int) (stats.getCompletionTimeSeconds() % 60);
+                    String timeStr = String.format(" Best Time: %d:%02d", minutes, seconds);
+                    Label timeLabel = new Label(timeStr, getSkin());
+                    timeLabel.setColor(0.7f, 0.7f, 0.7f, 1); // Light gray
+                    nameTable.add(timeLabel).padLeft(10 * game.scaleFactor);
+                }
+            }
         }
         
         textTable.add(nameTable).left();

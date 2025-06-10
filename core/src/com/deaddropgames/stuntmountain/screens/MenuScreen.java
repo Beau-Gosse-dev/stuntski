@@ -70,6 +70,20 @@ public class MenuScreen extends AbstractScreen {
         table.add(settingsButton).uniform().fill().spaceBottom(10);
         table.row();
 
+        // stats button
+        TextButton statsButton = new TextButton("Stats", skin);
+        statsButton.addListener(new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+                game.setScreen(new StatsScreen(game));
+            }
+        });
+        
+        table.add(statsButton).uniform().fill().spaceBottom(10);
+        table.row();
+
         // options button
         TextButton creditsButton = new TextButton("Credits", skin);
         creditsButton.addListener(new ClickListener() {

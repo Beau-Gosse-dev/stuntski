@@ -87,6 +87,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
     private String speedDesignator;
     private boolean isMetric;
     private long startTime;
+    private long levelStartTime;
     private float btnWidth = -1;
     private float btnHeight = -1;
 
@@ -174,6 +175,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         shapeRenderer.setColor(Color.WHITE);
 
         startTime = System.currentTimeMillis();
+        levelStartTime = 0;
         isMetric = game.preferences.getBoolean("metric", true);
         if(isMetric) {
 
@@ -243,6 +245,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         rotationCounter = 0;
         rotationTimer = 0;
         lastJump = null;
+        levelStartTime = 0;
 
         points = 0;
 
@@ -1168,6 +1171,11 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         buttonsTable.add(muteBtn).pad(5 * game.scaleFactor).width(btnWidth).height(btnHeight);
 
         isPaused = !isPaused;
+        
+        // Set level start time when first unpausing
+        if (!isPaused && levelStartTime == 0 && !levelFinished) {
+            levelStartTime = System.currentTimeMillis();
+        }
     }
 
     private void backToLastMenu() {
@@ -1208,6 +1216,12 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
             // finalize our stats for this run
             stats.setPoints(points);
+            
+            // Calculate completion time
+            if (levelStartTime > 0) {
+                float completionTime = (System.currentTimeMillis() - levelStartTime) / 1000.0f;
+                stats.setCompletionTimeSeconds(completionTime);
+            }
             
             // Mark level as completed in progress tracker
             game.levelProgress.markLevelCompleted(level.getStatsId());

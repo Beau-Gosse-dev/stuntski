@@ -16,6 +16,7 @@ public class LevelStats {
     private int numFrontFlips;
     private float airTimeSeconds;
     private float airDistanceMetres;
+    private float completionTimeSeconds;
 
     public LevelStats() {
 
@@ -24,6 +25,7 @@ public class LevelStats {
         numFrontFlips = 0;
         airTimeSeconds = 0f;
         airDistanceMetres = 0f;
+        completionTimeSeconds = 0f;
     }
 
     public int getPoints() {
@@ -56,7 +58,7 @@ public class LevelStats {
         this.numFrontFlips += numFrontFlips;
     }
 
-    private float getAirTimeSeconds() {
+    public float getAirTimeSeconds() {
 
         return airTimeSeconds;
     }
@@ -74,6 +76,16 @@ public class LevelStats {
     public void addAirDistanceMetres(float airDistanceMetres) {
 
         this.airDistanceMetres += airDistanceMetres;
+    }
+
+    public float getCompletionTimeSeconds() {
+
+        return completionTimeSeconds;
+    }
+
+    public void setCompletionTimeSeconds(float completionTimeSeconds) {
+
+        this.completionTimeSeconds = completionTimeSeconds;
     }
 
     public Table getSummaryTable(boolean isMetric, Skin skin, NinePatchDrawable patch) {
@@ -141,6 +153,14 @@ public class LevelStats {
         if(otherStats.getAirDistanceMetres() > airDistanceMetres) {
 
             airDistanceMetres = otherStats.getAirDistanceMetres();
+        }
+
+        // For completion time, we want the LOWEST (best) time, not highest
+        // But only if both times are greater than 0 (valid times)
+        if(otherStats.getCompletionTimeSeconds() > 0) {
+            if(completionTimeSeconds == 0 || otherStats.getCompletionTimeSeconds() < completionTimeSeconds) {
+                completionTimeSeconds = otherStats.getCompletionTimeSeconds();
+            }
         }
     }
 

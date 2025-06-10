@@ -189,12 +189,31 @@ public class OnlineLevelSelectScreen extends AbstractScreen implements Runnable 
         Table nameTable = new Table(getSkin());
         nameTable.add(createButtonLabel(levelSummaryResult.name)).left().pad(5 * game.scaleFactor);
         
-        // Check if level is completed and add indicator
+        // Check if level has stats and display them
         String levelStatsId = "online:" + levelSummaryResult.id;
-        if (game.levelProgress.isLevelCompleted(levelStatsId)) {
-            Label completedLabel = new Label(" [DONE]", getSkin());
-            completedLabel.setColor(0, 0.8f, 0, 1); // Green color
-            nameTable.add(completedLabel).padLeft(10 * game.scaleFactor);
+        if (game.levelStats.contains(levelStatsId)) {
+            com.badlogic.gdx.utils.Json json = new com.badlogic.gdx.utils.Json();
+            com.deaddropgames.stuntmountain.util.LevelStats stats = json.fromJson(
+                com.deaddropgames.stuntmountain.util.LevelStats.class, 
+                game.levelStats.getString(levelStatsId)
+            );
+            
+            if (stats != null) {
+                // Show best score
+                Label scoreLabel = new Label(" Best Score: " + stats.getPoints(), getSkin());
+                scoreLabel.setColor(0.7f, 0.7f, 0.7f, 1); // Light gray
+                nameTable.add(scoreLabel).padLeft(10 * game.scaleFactor);
+                
+                // Show best time if available
+                if (stats.getCompletionTimeSeconds() > 0) {
+                    int minutes = (int) (stats.getCompletionTimeSeconds() / 60);
+                    int seconds = (int) (stats.getCompletionTimeSeconds() % 60);
+                    String timeStr = String.format(" Best Time: %d:%02d", minutes, seconds);
+                    Label timeLabel = new Label(timeStr, getSkin());
+                    timeLabel.setColor(0.7f, 0.7f, 0.7f, 1); // Light gray
+                    nameTable.add(timeLabel).padLeft(10 * game.scaleFactor);
+                }
+            }
         }
         
         textTable.add(nameTable).left();

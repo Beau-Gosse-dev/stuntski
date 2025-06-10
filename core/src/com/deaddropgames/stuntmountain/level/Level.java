@@ -29,7 +29,13 @@ public class Level {
      * @return a string representing a (simple) unique ID for this level
      */
     public String getStatsId() {
-
+        
+        // For online levels, use the online ID format
+        if (id > 0) {
+            return "online:" + id;
+        }
+        
+        // For local levels, use the name-based format
         return String.format(Locale.getDefault(), "%s, %s, %d", name, author, difficulty);
     }
 }
