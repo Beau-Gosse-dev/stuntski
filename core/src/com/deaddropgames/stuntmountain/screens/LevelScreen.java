@@ -93,6 +93,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
     private Label pointsLabel;
     private Label levelNameLabel;
+    private Label bailedLabel;
+    private TextButton bailedRestartBtn;
 
     private GameMessageQueue msgQueue;
 
@@ -261,6 +263,14 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         if(msgQueue != null) {
 
             msgQueue.setStaticMessage(tapToStartMsg);
+        }
+        
+        if(bailedLabel != null) {
+            bailedLabel.setText("");
+        }
+        
+        if(bailedRestartBtn != null) {
+            bailedRestartBtn.setVisible(false);
         }
 
         if(speedLabel != null) {
@@ -548,10 +558,45 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         msgQueue = new GameMessageQueue(tapToStartMsg, skin);
         table.add(msgQueue.getMsgLabel()).expandX().fillX();
         
+        // Create a container for score label and value
+        Table scoreTable = new Table(skin);
+        Label scoreLabelText = new Label("Total Score", skin);
+        scoreLabelText.setColor(.25f, .25f, .25f, 1f);
+        scoreLabelText.setAlignment(Align.center);
+        scoreTable.add(scoreLabelText).center();
+        scoreTable.row();
+        
         pointsLabel = createButtonLabel(points + "");
-        pointsLabel.setColor(.25f, .25f, .25f, 1f);
-        pointsLabel.setAlignment(Align.right);
-        table.add(pointsLabel).minWidth(100 * game.scaleFactor).padRight(10 * game.scaleFactor).top();
+        pointsLabel.setColor(.25f, .25f, .25f, 1f);  // Back to black
+        pointsLabel.setAlignment(Align.center);
+        scoreTable.add(pointsLabel).center();
+        
+        table.add(scoreTable).minWidth(100 * game.scaleFactor).padRight(10 * game.scaleFactor).top();
+        
+        table.row();
+        
+        // Add bailed label and restart button container to the right side
+        table.add(new Label("", skin)).colspan(2);  // Empty cells for alignment
+        
+        Table bailedTable = new Table(skin);
+        bailedLabel = createTitleLabel("");  // Use title font for bigger text
+        bailedLabel.setColor(1f, 0.2f, 0.2f, 1f);  // Red color
+        bailedLabel.setAlignment(Align.center);
+        bailedTable.add(bailedLabel).center();
+        bailedTable.row();
+        
+        // Create restart button (initially hidden)
+        bailedRestartBtn = new TextButton("Restart", skin);
+        bailedRestartBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                reset();
+            }
+        });
+        bailedRestartBtn.setVisible(false);
+        bailedTable.add(bailedRestartBtn).padTop(5 * game.scaleFactor).size(80 * game.scaleFactor, 30 * game.scaleFactor);
+        
+        table.add(bailedTable).minWidth(120 * game.scaleFactor).padRight(10 * game.scaleFactor).top();
         
         table.row();
         
@@ -630,7 +675,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
                 if(!levelFinished) {
 
-                    msgQueue.setStaticMessage(bailedMsg);
+                    bailedLabel.setText(bailedMsg);
+                    bailedRestartBtn.setVisible(true);
                 }
             }
         }
@@ -751,6 +797,10 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
             stats.addBackFlips(lastJump.getNumBackFlips());
             stats.addFrontFlips(lastJump.getNumFrontFlips());
             stats.addAirDistanceMetres(lastJump.getDistanceMetres());
+            
+            // Update longest jump stats
+            stats.updateLongestJumpAirTime(lastJump.getAirTime());
+            stats.updateLongestJumpDistance(lastJump.getDistanceMetres());
 
             // clear out this jump so we don't record it again
             lastJump = null;
@@ -924,7 +974,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
             if(!levelFinished) {
 
-                msgQueue.setStaticMessage(bailedMsg);
+                bailedLabel.setText(bailedMsg);
+                bailedRestartBtn.setVisible(true);
             }
         }
     }
@@ -1129,13 +1180,15 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
             if(skierBailed) {
 
-                msgQueue.setStaticMessage(bailedMsg);
+                bailedLabel.setText(bailedMsg);
             } else if(levelFinished) {
 
                 msgQueue.setStaticMessage(levelFinishedMsg);
             } else {
 
                 msgQueue.clearMessages();
+                bailedLabel.setText("");
+                bailedRestartBtn.setVisible(false);
             }
             buttonsTable.add(pauseBtn).pad(5 * game.scaleFactor).width(btnWidth);
 
@@ -1213,6 +1266,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
             levelFinished = true;
             msgQueue.setStaticMessage(levelFinishedMsg);
+            bailedLabel.setText("");  // Clear bailed message when level is complete
+            bailedRestartBtn.setVisible(false);
 
             // finalize our stats for this run
             stats.setPoints(points);

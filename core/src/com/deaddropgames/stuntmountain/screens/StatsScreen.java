@@ -52,12 +52,14 @@ public class StatsScreen extends AbstractScreen {
         // Get stats data
         int completedLevels = game.levelProgress.getCompletedLevelCount();
         
-        // Find highest score and longest airtime
+        // Find highest score and longest jump
         Json json = new Json();
         int highestScore = 0;
         String highestScoreLevel = "";
-        float longestAirtime = 0f;
-        String longestAirtimeLevel = "";
+        float longestJumpTime = 0f;
+        String longestJumpTimeLevel = "";
+        float longestJumpDistance = 0f;
+        String longestJumpDistanceLevel = "";
         
         // Iterate through all saved level stats
         for (String key : game.levelStats.get().keySet()) {
@@ -72,10 +74,16 @@ public class StatsScreen extends AbstractScreen {
                             highestScoreLevel = formatLevelName(key);
                         }
                         
-                        // Check for longest airtime
-                        if (stats.getAirTimeSeconds() > longestAirtime) {
-                            longestAirtime = stats.getAirTimeSeconds();
-                            longestAirtimeLevel = formatLevelName(key);
+                        // Check for longest jump time
+                        if (stats.getLongestJumpAirTimeSeconds() > longestJumpTime) {
+                            longestJumpTime = stats.getLongestJumpAirTimeSeconds();
+                            longestJumpTimeLevel = formatLevelName(key);
+                        }
+                        
+                        // Check for longest jump distance
+                        if (stats.getLongestJumpDistanceMetres() > longestJumpDistance) {
+                            longestJumpDistance = stats.getLongestJumpDistanceMetres();
+                            longestJumpDistanceLevel = formatLevelName(key);
                         }
                     }
                 } catch (Exception e) {
@@ -94,11 +102,24 @@ public class StatsScreen extends AbstractScreen {
                 highestScoreLevel);
         }
         
-        if (longestAirtime > 0) {
+        if (longestJumpTime > 0) {
             statsTable.row().padTop(10 * game.scaleFactor);
-            addStatRow(statsTable, "Longest Airtime:", 
-                String.format(Locale.getDefault(), "%.1f seconds", longestAirtime), 
-                longestAirtimeLevel);
+            addStatRow(statsTable, "Longest Jump Time:", 
+                String.format(Locale.getDefault(), "%.1f seconds", longestJumpTime), 
+                longestJumpTimeLevel);
+        }
+        
+        if (longestJumpDistance > 0) {
+            statsTable.row().padTop(10 * game.scaleFactor);
+            
+            // Convert to appropriate units
+            boolean isMetric = game.preferences.getBoolean("metric", true);
+            float distance = isMetric ? longestJumpDistance : longestJumpDistance * 3.28084f;
+            String units = isMetric ? "metres" : "feet";
+            
+            addStatRow(statsTable, "Longest Jump Distance:", 
+                String.format(Locale.getDefault(), "%d %s", Math.round(distance), units), 
+                longestJumpDistanceLevel);
         }
 
         table.add(statsTable).width(stage.getWidth() * 0.8f).spaceBottom(30 * game.scaleFactor);

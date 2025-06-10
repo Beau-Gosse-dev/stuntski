@@ -62,14 +62,14 @@ public class BipedJump {
             }
 
             flipPoints = absNumFlips * 100 + (absNumFlips - 1) * 25;
-            jumpMsg += String.format(Locale.getDefault(), " +%d\n", flipPoints);
+            jumpMsg += String.format(Locale.getDefault(), " [+%d]\n", flipPoints);
         }
 
         airTime = (landTime - launchTime) / 1e3f;
         if(airTime > 1.0f) {
             airTimePoints = Math.round((airTime - 1.0f) * 25.0f);
         }
-        jumpMsg += String.format(Locale.getDefault(), "%d seconds +%d\n", Math.round(airTime), airTimePoints);
+        jumpMsg += String.format(Locale.getDefault(), "%d seconds [+%d]\n", Math.round(airTime), airTimePoints);
 
         if(launchPos != null && landPos != null) {
 
@@ -81,9 +81,9 @@ public class BipedJump {
             
             if(!isMetric) {
                 distance *= metresToFeet;
-                jumpMsg += String.format(Locale.getDefault(), "%d feet +%d", Math.round(distance), distancePoints);
+                jumpMsg += String.format(Locale.getDefault(), "%d feet [+%d]", Math.round(distance), distancePoints);
             } else {
-                jumpMsg += String.format(Locale.getDefault(), "%d meters +%d", Math.round(distance), distancePoints);
+                jumpMsg += String.format(Locale.getDefault(), "%d meters [+%d]", Math.round(distance), distancePoints);
             }
         }
 

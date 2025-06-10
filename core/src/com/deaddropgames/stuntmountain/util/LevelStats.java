@@ -17,6 +17,8 @@ public class LevelStats {
     private float airTimeSeconds;
     private float airDistanceMetres;
     private float completionTimeSeconds;
+    private float longestJumpAirTimeSeconds;
+    private float longestJumpDistanceMetres;
 
     public LevelStats() {
 
@@ -26,6 +28,8 @@ public class LevelStats {
         airTimeSeconds = 0f;
         airDistanceMetres = 0f;
         completionTimeSeconds = 0f;
+        longestJumpAirTimeSeconds = 0f;
+        longestJumpDistanceMetres = 0f;
     }
 
     public int getPoints() {
@@ -88,6 +92,30 @@ public class LevelStats {
         this.completionTimeSeconds = completionTimeSeconds;
     }
 
+    public float getLongestJumpAirTimeSeconds() {
+
+        return longestJumpAirTimeSeconds;
+    }
+
+    public void updateLongestJumpAirTime(float jumpAirTimeSeconds) {
+
+        if (jumpAirTimeSeconds > longestJumpAirTimeSeconds) {
+            longestJumpAirTimeSeconds = jumpAirTimeSeconds;
+        }
+    }
+
+    public float getLongestJumpDistanceMetres() {
+
+        return longestJumpDistanceMetres;
+    }
+
+    public void updateLongestJumpDistance(float jumpDistanceMetres) {
+
+        if (jumpDistanceMetres > longestJumpDistanceMetres) {
+            longestJumpDistanceMetres = jumpDistanceMetres;
+        }
+    }
+
     public Table getSummaryTable(boolean isMetric, Skin skin, NinePatchDrawable patch) {
 
         Table table = new Table(skin);
@@ -110,14 +138,14 @@ public class LevelStats {
         table.add(createButtonLabel(numFrontFlips + "", skin)).left().padRight(padding);
         table.row();
 
-        table.add(createButtonLabel("Total Air Time:", skin)).right().padRight(padding);
-        table.add(createButtonLabel(String.format(Locale.getDefault(), "%d seconds", Math.round(airTimeSeconds)), skin)).left().padRight(padding);
+        table.add(createButtonLabel("Longest Jump Time:", skin)).right().padRight(padding);
+        table.add(createButtonLabel(String.format(Locale.getDefault(), "%.1f seconds", longestJumpAirTimeSeconds), skin)).left().padRight(padding);
         table.row();
 
-        float distance = isMetric ? airDistanceMetres : airDistanceMetres * metresToFeet;
+        float distance = isMetric ? longestJumpDistanceMetres : longestJumpDistanceMetres * metresToFeet;
         String units = isMetric ? "metres" : "feet";
 
-        table.add(createButtonLabel("Total Air Distance:", skin)).right().padRight(padding);
+        table.add(createButtonLabel("Longest Jump Distance:", skin)).right().padRight(padding);
         table.add(createButtonLabel(String.format(Locale.getDefault(), "%d %s", Math.round(distance), units), skin)).left().padRight(padding);
         table.row();
 
@@ -161,6 +189,14 @@ public class LevelStats {
             if(completionTimeSeconds == 0 || otherStats.getCompletionTimeSeconds() < completionTimeSeconds) {
                 completionTimeSeconds = otherStats.getCompletionTimeSeconds();
             }
+        }
+
+        if(otherStats.getLongestJumpAirTimeSeconds() > longestJumpAirTimeSeconds) {
+            longestJumpAirTimeSeconds = otherStats.getLongestJumpAirTimeSeconds();
+        }
+
+        if(otherStats.getLongestJumpDistanceMetres() > longestJumpDistanceMetres) {
+            longestJumpDistanceMetres = otherStats.getLongestJumpDistanceMetres();
         }
     }
 
