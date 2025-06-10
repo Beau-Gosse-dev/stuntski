@@ -766,7 +766,11 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
                             launchPos,
                             skier.getUpperBody().getWorldCenter(),
                             isMetric);
-                    msgQueue.addDynamicMessage(lastJump.getJumpMsg(), System.currentTimeMillis());
+                    
+                    // Only show jump message if points were earned
+                    if (lastJump.getPoints() > 0) {
+                        msgQueue.addPersistentMessage(lastJump.getJumpMsg());
+                    }
                 }
 
                 airborne = false;
