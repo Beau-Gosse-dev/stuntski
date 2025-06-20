@@ -33,6 +33,7 @@ import com.deaddropgames.stuntmountain.StuntMountain;
 import com.deaddropgames.stuntmountain.sim.TerrainShape;
 import com.deaddropgames.stuntmountain.sim.TreeModel;
 import com.deaddropgames.stuntmountain.ui.LoginDialog;
+import com.deaddropgames.stuntmountain.ui.MinimapRenderer;
 import com.deaddropgames.stuntmountain.ui.RateLevelDialog;
 import com.deaddropgames.stuntmountain.util.GameMessageQueue;
 import com.deaddropgames.stuntmountain.util.LevelStats;
@@ -92,7 +93,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
     private float btnHeight = -1;
 
     private Label pointsLabel;
-    private Label levelNameLabel;
+    // private Label levelNameLabel; // Now shown in minimap
     private Label bailedLabel;
     private TextButton bailedRestartBtn;
 
@@ -147,6 +148,9 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
     // modal dialogs
     private Dialog modalDlg;
+    
+    // minimap
+    private MinimapRenderer minimapRenderer;
 
     public LevelScreen(StuntMountain game) {
 
@@ -224,6 +228,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         lastBailSound = 0;
 
         random = new Random();
+        
+        minimapRenderer = new MinimapRenderer();
     }
 
     // reset the level
@@ -278,10 +284,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
             speedLabel.setText("0" + speedDesignator);
         }
 
-        if(levelNameLabel != null && level != null) {
-
-            levelNameLabel.setText(level.name);
-        }
+        // Level name now shown in minimap
 
         if(controlArea != null) {
 
@@ -540,24 +543,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
             }
         });
         buttonsTable.add(muteBtn).pad(5 * game.scaleFactor).width(btnWidth).height(btnHeight);
-
-        // create the speed designation table
-        Table table = new Table(skin);
-        table.setWidth(stage.getWidth());
-        table.setHeight(stage.getHeight());
-
-        levelNameLabel = createButtonLabel(level != null ? level.name : "");
-        levelNameLabel.setColor(.25f, .25f, .25f, 1f);
-        levelNameLabel.setAlignment(Align.center);
-        table.add(levelNameLabel).colspan(3).expandX().fillX().top().padTop(10 * game.scaleFactor);
         
-        table.row();
-        
-        table.add(new Label("", skin)).minWidth(100 * game.scaleFactor).padLeft(10 * game.scaleFactor).top();
-
-        msgQueue = new GameMessageQueue(tapToStartMsg, skin);
-        table.add(msgQueue.getMsgLabel()).expandX().fillX();
-        
+        // Add score to the right of the buttons
         // Create a container for score label and value
         Table scoreTable = new Table(skin);
         Label scoreLabelText = new Label("Total Score", skin);
@@ -567,16 +554,24 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         scoreTable.row();
         
         pointsLabel = createButtonLabel(points + "");
-        pointsLabel.setColor(.25f, .25f, .25f, 1f);  // Back to black
+        pointsLabel.setColor(.25f, .25f, .25f, 1f);  // Dark gray
         pointsLabel.setAlignment(Align.center);
         scoreTable.add(pointsLabel).center();
         
-        table.add(scoreTable).minWidth(100 * game.scaleFactor).padRight(10 * game.scaleFactor).top();
+        buttonsTable.add(scoreTable).padLeft(20 * game.scaleFactor);
+
+        // create the main table for other UI elements
+        Table table = new Table(skin);
+        table.setWidth(stage.getWidth());
+        table.setHeight(stage.getHeight());
+        
+        // Message queue at the top center
+        msgQueue = new GameMessageQueue(tapToStartMsg, skin);
+        table.add(msgQueue.getMsgLabel()).expandX().fillX().top().padTop(10 * game.scaleFactor);
         
         table.row();
         
-        // Add bailed label and restart button container to the right side
-        table.add(new Label("", skin)).colspan(2);  // Empty cells for alignment
+        // Add bailed label and restart button container to the right side (adjusted for single column)
         
         Table bailedTable = new Table(skin);
         bailedLabel = createTitleLabel("");  // Use title font for bigger text
@@ -596,7 +591,8 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         bailedRestartBtn.setVisible(false);
         bailedTable.add(bailedRestartBtn).padTop(5 * game.scaleFactor).size(80 * game.scaleFactor, 30 * game.scaleFactor);
         
-        table.add(bailedTable).minWidth(120 * game.scaleFactor).padRight(10 * game.scaleFactor).top();
+        // Add padding to position below minimap (minimap height + padding)
+        table.add(bailedTable).padRight(10 * game.scaleFactor).padTop(40 * game.scaleFactor).top().right();
         
         table.row();
         
@@ -605,10 +601,10 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         int controlAreaType = game.preferences.getInteger("controlAreaType", game.levelSettings.defaultControlAreaType);
         if(controlAreaType == ControlArea.RIGHTBOTTOM) {
 
-            table.add(speedLabel).expandY().bottom().left().padLeft(10).colspan(3);
+            table.add(speedLabel).expandY().bottom().left().padLeft(10);
         } else {
         
-            table.add(speedLabel).expandY().bottom().right().padRight(10).colspan(3);
+            table.add(speedLabel).expandY().bottom().right().padRight(10);
         }
 
         stage.addActor(table);
@@ -864,6 +860,11 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         // draw hud
         stage.act(delta);
         stage.draw();
+        
+        // draw minimap
+        if (minimapRenderer != null && level != null && skier != null && !isPaused) {
+            minimapRenderer.render(level, skier, camera);
+        }
     }
 
     // contact listener functions
@@ -1194,7 +1195,7 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
                 bailedLabel.setText("");
                 bailedRestartBtn.setVisible(false);
             }
-            buttonsTable.add(pauseBtn).pad(5 * game.scaleFactor).width(btnWidth);
+            buttonsTable.add(pauseBtn).pad(5 * game.scaleFactor).width(btnWidth).height(btnHeight);
 
             if(!game.preferences.getBoolean("mute") && touchingTerrain) {
 
@@ -1226,6 +1227,16 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         }
 
         buttonsTable.add(muteBtn).pad(5 * game.scaleFactor).width(btnWidth).height(btnHeight);
+        
+        // Re-add score table
+        Table scoreTable = new Table(getSkin());
+        Label scoreLabelText = new Label("Total Score", getSkin());
+        scoreLabelText.setColor(.25f, .25f, .25f, 1f);
+        scoreLabelText.setAlignment(Align.center);
+        scoreTable.add(scoreLabelText).center();
+        scoreTable.row();
+        scoreTable.add(pointsLabel).center();
+        buttonsTable.add(scoreTable).padLeft(20 * game.scaleFactor);
 
         isPaused = !isPaused;
         
@@ -1487,6 +1498,9 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
         if(world != null) {
 
             world.dispose();
+        }
+        if(minimapRenderer != null) {
+            minimapRenderer.dispose();
         }
     }
 }
