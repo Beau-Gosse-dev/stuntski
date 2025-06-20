@@ -841,6 +841,9 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
 
         // draw the terrain as a bunch of filled rectangles and triangles
         drawTerrain();
+        
+        // draw finish line
+        drawFinishLine();
 
         // draw biped
         if(game.isDebugMode()) {
@@ -1091,6 +1094,77 @@ public class LevelScreen extends AbstractScreen implements ContactListener {
                 }
             }
         }
+    }
+    
+    private void drawFinishLine() {
+        if (level == null || level.endX <= 0f) {
+            return;
+        }
+        
+        // Only draw if finish line is in viewport
+        if (Math.abs(level.endX - camera.position.x) < camera.viewportWidth * camera.zoom) {
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            
+            // Draw checkered flag pattern
+            float flagHeight = 15f; // Height of the finish line flag
+            float poleHeight = 25f; // Total height including pole
+            float squareSize = 2.5f; // Size of each checker square
+            float groundY = getGroundYAtX(level.endX);
+            
+            // Draw pole
+            shapeRenderer.setColor(0.5f, 0.3f, 0.1f, 1f); // Brown color for pole
+            shapeRenderer.rect(level.endX - 0.5f, groundY, 1f, poleHeight);
+            
+            // Draw checkered flag
+            int numSquaresX = 6;
+            int numSquaresY = 4;
+            float flagWidth = numSquaresX * squareSize;
+            float flagY = groundY + poleHeight - flagHeight;
+            
+            for (int x = 0; x < numSquaresX; x++) {
+                for (int y = 0; y < numSquaresY; y++) {
+                    // Alternate black and white squares
+                    if ((x + y) % 2 == 0) {
+                        shapeRenderer.setColor(1f, 1f, 1f, 1f); // White
+                    } else {
+                        shapeRenderer.setColor(0f, 0f, 0f, 1f); // Black
+                    }
+                    shapeRenderer.rect(level.endX + x * squareSize, 
+                                     flagY + y * squareSize, 
+                                     squareSize, squareSize);
+                }
+            }
+            
+            shapeRenderer.end();
+            
+            // Draw "FINISH" text
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(1f, 0f, 0f, 1f); // Red outline
+            // Could add text here if we had a font renderer in the game view
+            shapeRenderer.end();
+        }
+    }
+    
+    private float getGroundYAtX(float x) {
+        // Find the terrain height at the given X position
+        // This is a simplified version - you might need to interpolate between points
+        if (level.polyLines != null) {
+            for (PolyLine polyLine : level.polyLines) {
+                if (polyLine.points != null && polyLine.points.length >= 2) {
+                    for (int i = 0; i < polyLine.points.length - 1; i++) {
+                        Point p1 = polyLine.points[i];
+                        Point p2 = polyLine.points[i + 1];
+                        if (x >= p1.x && x <= p2.x) {
+                            // Linear interpolation
+                            float t = (x - p1.x) / (p2.x - p1.x);
+                            return p1.y + t * (p2.y - p1.y);
+                        }
+                    }
+                }
+            }
+        }
+        return 0f; // Default ground level
     }
 
     @Override

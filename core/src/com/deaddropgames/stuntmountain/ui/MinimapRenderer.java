@@ -81,6 +81,9 @@ public class MinimapRenderer implements Disposable {
         // Draw trees
         drawTrees(level, skierPos);
         
+        // Draw finish line
+        drawFinishLine(level, skierPos);
+        
         // Draw player
         drawPlayer(skierPos);
         
@@ -153,6 +156,45 @@ public class MinimapRenderer implements Disposable {
                 float size = 2f; // Small triangle size
                 
                 shapeRenderer.triangle(x - size/2, y, x + size/2, y, x, y + size * 1.5f);
+            }
+        }
+    }
+    
+    private void drawFinishLine(Level level, Vector2 centerPos) {
+        if (level.endX <= 0f) return;
+        
+        if (Math.abs(level.endX - centerPos.x) < WORLD_VIEW_WIDTH) {
+            // Draw vertical line at finish position
+            float lineWidth = 3f;
+            float lineHeight = 80f; // Extra tall so always visible
+            float segmentHeight = 5f; // Height of each black/white segment
+            
+            // Find ground level by checking terrain at finish x position
+            float groundY = 0f;
+            if (level.polyLines != null && level.polyLines.length > 0) {
+                // Just use the first polyline for simplicity
+                PolyLine polyLine = level.polyLines[0];
+                if (polyLine.points != null && polyLine.points.length > 0) {
+                    // Find the closest point
+                    for (Point p : polyLine.points) {
+                        if (p.x <= level.endX) {
+                            groundY = p.y;
+                        }
+                    }
+                }
+            }
+            
+            // Draw alternating black and white segments
+            int numSegments = (int)(lineHeight / segmentHeight);
+            for (int i = 0; i < numSegments; i++) {
+                if (i % 2 == 0) {
+                    shapeRenderer.setColor(1f, 1f, 1f, 1f); // White
+                } else {
+                    shapeRenderer.setColor(0f, 0f, 0f, 1f); // Black
+                }
+                shapeRenderer.rect(level.endX - lineWidth/2, 
+                                 groundY + i * segmentHeight, 
+                                 lineWidth, segmentHeight);
             }
         }
     }
