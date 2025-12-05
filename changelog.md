@@ -1,6 +1,10 @@
 # Release Notes
 
 
+# 1.2.1 - 12/05/2025
+
+    - A patch change with bullets
+
 # 1.2.0 - 12/05/2025
 
     - Adding changelog management test again
