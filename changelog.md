@@ -1,6 +1,10 @@
 # Release Notes
 
 
+# 2.0.0 - 12/05/2025
+
+    - Testing Major
+
 # 1.2.1 - 12/05/2025
 
     - A patch change with bullets

@@ -1,2 +1,0 @@
-major
-Testing Major
