@@ -1,0 +1,136 @@
+name: Assemble changelog from fragments
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - changelog/**
+
+concurrency:
+  group: changelog-assembler
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-changelog:
+    if: "!contains(github.event.head_commit.message || '', '[skip changelog]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build changelog from fragments
+        id: assemble
+        run: |
+          set -euo pipefail
+          dir="changelog"
+
+          if [ ! -d "$dir" ] || [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          node <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          const dir = 'changelog';
+          const templates = new Set(['fragment-template.md', 'template.md']);
+          const files = fs
+            .readdirSync(dir)
+            .filter(f => fs.statSync(path.join(dir, f)).isFile() && !templates.has(f));
+          if (!files.length) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'updated=false\n');
+            process.exit(0);
+          }
+
+          const changelogPath = 'changelog.md';
+          const changelog = fs.readFileSync(changelogPath, 'utf8').replace(/\r\n/g, '\n').split('\n');
+          const firstVersionIdx = changelog.findIndex((line, idx) => idx > 0 && /^#\s+\d+\.\d+\.\d+/.test(line));
+          if (firstVersionIdx === -1) {
+            throw new Error('No version line found in changelog.md');
+          }
+
+          const currentVersion = changelog[firstVersionIdx].match(/(\d+\.\d+\.\d+)/)[1];
+          const [maj0, min0, pat0] = currentVersion.split('.').map(n => parseInt(n, 10));
+
+          let bump = 'patch';
+          const entries = [];
+
+          for (const file of files) {
+            const content = fs.readFileSync(path.join(dir, file), 'utf8').replace(/\r\n/g, '\n').split('\n');
+            if (!content.length) continue;
+
+            const type = (content[0] || '').trim().toLowerCase();
+            if (type === 'major') {
+              bump = 'major';
+            } else if (type === 'minor' && bump !== 'major') {
+              bump = 'minor';
+            }
+
+            const body = content
+              .slice(1)
+              .map(l => l.trim().replace(/^[-*•]\s+/, '')) // normalize if author added their own bullet marker
+              .filter(Boolean);
+            entries.push(...body);
+          }
+
+          if (!entries.length) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'updated=false\n');
+            process.exit(0);
+          }
+
+          let maj = maj0;
+          let min = min0;
+          let pat = pat0;
+
+          if (bump === 'major') {
+            maj += 1;
+            min = 0;
+            pat = 0;
+          } else if (bump === 'minor') {
+            min += 1;
+            pat = 0;
+          } else {
+            pat += 1;
+          }
+
+          const now = new Date();
+          const dateStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
+          const newVersion = `${maj}.${min}.${pat}`;
+          const bullets = entries.map(l => `    - ${l}`);
+
+          const newEntry = [`# ${newVersion} - ${dateStr}`, '', ...bullets, ''];
+          const updated = [
+            ...changelog.slice(0, firstVersionIdx),
+            ...newEntry,
+            ...changelog.slice(firstVersionIdx)
+          ];
+
+          fs.writeFileSync(changelogPath, updated.join('\n'));
+
+          for (const file of files) {
+            fs.unlinkSync(path.join(dir, file));
+          }
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'updated=true\n');
+          console.log(`Updated changelog to ${newVersion} (${bump})`);
+          EOF
+
+      - name: Commit and push changelog
+        if: steps.assemble.outputs.updated == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add changelog.md changelog || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: update changelog [skip ci] [skip changelog]"
+          git push origin HEAD:main
